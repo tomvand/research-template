@@ -37,7 +37,8 @@ manually.
     numbers.
     - **fig/<article_format>**: Figures generated for the specified article
     format with the appropriate file type (e.g. pdf).
-  - **format**: Files belonging to a specific format, e.g. IEEE.
-  - **content**: Files belonging to this research. These files shoudl be kept as
+  - **format**: Files belonging to a specific format, e.g. IEEE. Should include
+  a root.tex file that includes the appropriate content file(s).
+  - **content**: Files belonging to this research. These files should be kept as
   format-agnostic as possible, to make it easier to include these in future work
   such as the final thesis.
