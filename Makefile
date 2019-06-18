@@ -1,6 +1,7 @@
 all:
 .PHONY: all
 
+.SECONDARY:
 
 ################################################################################
 # General
@@ -12,24 +13,19 @@ setup: venv
 .PHONY: setup
 
 # Clean
-clean:
+clean: clean-processing
 .PHONY: clean
 
-clean-all: clean-data clean-venv
+clean-all: clean clean-data clean-venv
 .PHONY: clean-all
-
-clean-data:
-	rm -r data/mnist
-.PHONY: clean-data
-
-clean-venv:
-	rm -r code/venv
-.PHONY: clean-venv
-	
 
 # Python virtual environment(s)
 venv: code/venv/python
 .PHONY: venv
+
+clean-venv:
+	rm -rf code/venv || true
+.PHONY: clean-venv
 
 code/venv/%: code/requirements-%.txt
 	test -d code/venv/$* || virtualenv code/venv/$*
@@ -50,10 +46,50 @@ requirements-%: code/venv/%
 data: data/mnist
 .PHONY: data
 
+clean-data:
+	rm -rf data/mnist || true
+.PHONY: clean-data
+
 # MNIST dataset
 data/mnist: data/example-download-mnist.sh
 	cd data && ./example-download-mnist.sh
+	touch data/mnist
 
 data/mnist/%: data/mnist
-	#
+	
+
+
+################################################################################
+# Processing
+################################################################################
+# Generate intermediate data
+
+processing: generated/mnist_numpy
+.PHONY: processing
+
+clean-processing:
+	rm -rf generated/mnist_numpy || true
+.PHONY: clean-processing
+
+# Convert MNIST data to numpy
+generated/mnist_numpy: \
+		generated/mnist_numpy/train_images.ubyte.npy \
+		generated/mnist_numpy/train_labels.ubyte.npy \
+		generated/mnist_numpy/test_images.ubyte.npy \
+		generated/mnist_numpy/test_labels.ubyte.npy
+	touch generated/mnist_numpy
+
+generated/mnist_numpy/%_images.ubyte.npy: data/mnist/%_images.ubyte code/processing/mnist_to_numpy.py code/venv/python
+	. code/venv/python/bin/activate && \
+		python3 code/processing/mnist_to_numpy.py \
+			--input_directory data/mnist/ \
+			--output_directory generated/mnist_numpy/ \
+			--data $*_images.ubyte
+
+generated/mnist_numpy/%_labels.ubyte.npy: data/mnist/%_labels.ubyte code/processing/mnist_to_numpy.py code/venv/python
+	. code/venv/python/bin/activate && \
+		python3 code/processing/mnist_to_numpy.py \
+			--input_directory data/mnist/ \
+			--output_directory generated/mnist_numpy/ \
+			--label $*_labels.ubyte
 
