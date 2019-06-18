@@ -28,13 +28,15 @@ clean-venv:
 .PHONY: clean-venv
 
 code/venv/%: code/requirements-%.txt
-	test -d code/venv/$* || virtualenv code/venv/$*
-	. code/venv/$*/bin/activate && pip install -Ur code/requirements-$*.txt
+	test -d code/venv/$* || virtualenv code/venv/$* -p python3
+	. code/venv/$*/bin/activate && \
+			pip install -Ur code/requirements-$*.txt
 	touch code/venv/$*
 
 # Save python virtual environment
 requirements-%: code/venv/%
-	. code/venv/$*/bin/activate && pip freeze | pip-compile - --output-file code/requirements-$*.txt
+	. code/venv/$*/bin/activate && \
+			pip freeze | pip-compile - --output-file code/requirements-$*.txt
 .PHONY: requirements-%
 
 
@@ -79,14 +81,20 @@ generated/mnist_numpy: \
 		generated/mnist_numpy/test_labels.ubyte.npy
 	touch generated/mnist_numpy
 
-generated/mnist_numpy/%_images.ubyte.npy: data/mnist/%_images.ubyte code/processing/mnist_to_numpy.py code/venv/python
+generated/mnist_numpy/%_images.ubyte.npy: \
+		data/mnist/%_images.ubyte \
+		code/processing/mnist_to_numpy.py \
+		code/venv/python
 	. code/venv/python/bin/activate && \
 		python3 code/processing/mnist_to_numpy.py \
 			--input_directory data/mnist/ \
 			--output_directory generated/mnist_numpy/ \
 			--data $*_images.ubyte
 
-generated/mnist_numpy/%_labels.ubyte.npy: data/mnist/%_labels.ubyte code/processing/mnist_to_numpy.py code/venv/python
+generated/mnist_numpy/%_labels.ubyte.npy: \
+		data/mnist/%_labels.ubyte \
+		code/processing/mnist_to_numpy.py \
+		code/venv/python
 	. code/venv/python/bin/activate && \
 		python3 code/processing/mnist_to_numpy.py \
 			--input_directory data/mnist/ \
