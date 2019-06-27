@@ -66,7 +66,7 @@ data/mnist/%: data/mnist
 ################################################################################
 # Generate intermediate data
 
-processing: generated/mnist_numpy
+processing: generated/mnist_numpy generated/pca
 .PHONY: processing
 
 clean-processing:
@@ -103,6 +103,8 @@ generated/mnist_numpy/%_labels.npy: \
 					--label $*_labels.ubyte
 
 # Apply PCA to MNIST data
+generated/pca: generated/pca/0.9
+
 generated/pca/%: \
 		generated/mnist_numpy \
 		code/processing/recognition/pca.py \
