@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import os
 
+
 def main():
     parser = argparse.ArgumentParser(description='Process raw MNIST files into numpy files.')
     parser.add_argument('--input_directory', action='store', required=True)
@@ -26,6 +27,7 @@ def main():
         output_name = os.path.join(args.output_directory, label_name)
         with open(input_name, 'rb') as f:
             np.save(output_name, np.frombuffer(f.read(), np.uint8, offset=8))
+
 
 if __name__ == '__main__':
     main()
