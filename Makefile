@@ -58,7 +58,7 @@ data/mnist: data/example-download-mnist.sh
 	touch data/mnist
 
 data/mnist/%: data/mnist
-	
+	#
 
 
 ################################################################################
@@ -71,6 +71,7 @@ processing: generated/mnist_numpy
 
 clean-processing:
 	rm -rf generated/mnist_numpy || true
+	rm -rf generated/pca || true
 .PHONY: clean-processing
 
 # Convert MNIST data to numpy
@@ -86,18 +87,35 @@ generated/mnist_numpy/%_images.npy: \
 		code/processing/preprocessing/mnist_to_numpy.py \
 		code/venv/python
 	. code/venv/python/bin/activate && \
-		python3 code/processing/preprocessing/mnist_to_numpy.py \
-			--input_directory data/mnist/ \
-			--output_directory generated/mnist_numpy/ \
-			--data $*_images.ubyte
+			python3 code/processing/preprocessing/mnist_to_numpy.py \
+					--input_directory data/mnist/ \
+					--output_directory generated/mnist_numpy/ \
+					--data $*_images.ubyte
 
 generated/mnist_numpy/%_labels.npy: \
 		data/mnist/%_labels.ubyte \
 		code/processing/preprocessing/mnist_to_numpy.py \
 		code/venv/python
 	. code/venv/python/bin/activate && \
-		python3 code/processing/preprocessing/mnist_to_numpy.py \
-			--input_directory data/mnist/ \
-			--output_directory generated/mnist_numpy/ \
-			--label $*_labels.ubyte
+			python3 code/processing/preprocessing/mnist_to_numpy.py \
+					--input_directory data/mnist/ \
+					--output_directory generated/mnist_numpy/ \
+					--label $*_labels.ubyte
 
+# Apply PCA to MNIST data
+generated/pca/%: \
+		generated/mnist_numpy \
+		code/processing/recognition/pca.py \
+		code/venv/python
+	. code/venv/python/bin/activate && \
+			python3 code/processing/recognition/pca.py \
+					--input_directory generated/mnist_numpy \
+					--train_data train_images.npy \
+					--test_data test_images.npy \
+					--n_components $* \
+					--output_directory generated/pca/
+	cp generated/mnist_numpy/train_labels.npy generated/pca/$*/train_labels.npy
+	cp generated/mnist_numpy/test_labels.npy generated/pca/$*/test_labels.npy
+	touch generated/pca/$*
+
+	
