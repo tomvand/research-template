@@ -75,28 +75,28 @@ clean-processing:
 
 # Convert MNIST data to numpy
 generated/mnist_numpy: \
-		generated/mnist_numpy/train_images.ubyte.npy \
-		generated/mnist_numpy/train_labels.ubyte.npy \
-		generated/mnist_numpy/test_images.ubyte.npy \
-		generated/mnist_numpy/test_labels.ubyte.npy
+		generated/mnist_numpy/train_images.npy \
+		generated/mnist_numpy/train_labels.npy \
+		generated/mnist_numpy/test_images.npy \
+		generated/mnist_numpy/test_labels.npy
 	touch generated/mnist_numpy
 
-generated/mnist_numpy/%_images.ubyte.npy: \
+generated/mnist_numpy/%_images.npy: \
 		data/mnist/%_images.ubyte \
-		code/processing/mnist_to_numpy.py \
+		code/processing/preprocessing/mnist_to_numpy.py \
 		code/venv/python
 	. code/venv/python/bin/activate && \
-		python3 code/processing/mnist_to_numpy.py \
+		python3 code/processing/preprocessing/mnist_to_numpy.py \
 			--input_directory data/mnist/ \
 			--output_directory generated/mnist_numpy/ \
 			--data $*_images.ubyte
 
-generated/mnist_numpy/%_labels.ubyte.npy: \
+generated/mnist_numpy/%_labels.npy: \
 		data/mnist/%_labels.ubyte \
-		code/processing/mnist_to_numpy.py \
+		code/processing/preprocessing/mnist_to_numpy.py \
 		code/venv/python
 	. code/venv/python/bin/activate && \
-		python3 code/processing/mnist_to_numpy.py \
+		python3 code/processing/preprocessing/mnist_to_numpy.py \
 			--input_directory data/mnist/ \
 			--output_directory generated/mnist_numpy/ \
 			--label $*_labels.ubyte

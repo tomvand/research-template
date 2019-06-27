@@ -17,14 +17,14 @@ def main():
     for data_name in args.data:
         print('Converting {}...'.format(data_name))
         input_name = os.path.join(args.input_directory, data_name)
-        output_name = os.path.join(args.output_directory, data_name)
+        output_name = os.path.join(args.output_directory, os.path.splitext(data_name)[0])
         with open(input_name, 'rb') as f:
             np.save(output_name, np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28 * 28))
 
     for label_name in args.label:
         print('Converting {}...'.format(label_name))
         input_name = os.path.join(args.input_directory, label_name)
-        output_name = os.path.join(args.output_directory, label_name)
+        output_name = os.path.join(args.output_directory, os.path.splitext(label_name)[0])
         with open(input_name, 'rb') as f:
             np.save(output_name, np.frombuffer(f.read(), np.uint8, offset=8))
 
